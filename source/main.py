@@ -22,7 +22,7 @@ queue_eu_id = 698323700025524345
 queue_last_id = 698371067336589313
 queue_teams_ids = [698323152836493312, 698323212773228584,
                    698323976895725608, 698324016762454126]
-channel_id = 698328368676077698
+channel_id = 698328586096214098
 
 bot = commands.Bot(command_prefix='!', description='Vice Volerant 10man bot. Type \'!help\' for help.')
 
@@ -95,7 +95,7 @@ async def on_voice_state_update(member, before, after):
 
             # Joined queue #1
             if after.channel.id == queue_na_id:
-                await check_ready(member, queue_na_id, after)
+                await check_ready(member, queue_na_role_id, after)
 
             # Joined queue #2
             elif after.channel.id == queue_eu_id:
@@ -137,7 +137,13 @@ async def check_ready(member, role_id, after):
 
     if len(after.channel.members) == after.channel.user_limit:
         channel = bot.get_channel(channel_id)
-        await channel.send(f'{role.mention} your queue is ready, join the server within 5 minutes.')
+        bot_avatar = bot.user.avatar_url
+        embed = discord.Embed()
+        embed.set_thumbnail(url=bot_avatar)
+        embed.add_field(name="**Queue Filled**",
+                        value="Queue has reached 10 players. Captains will start adding players on VALORANT to fill the party.")
+        embed.set_footer(text='Vice Valorant 10mans/Scrims', icon_url=bot_avatar)
+        await channel.send(content=f'{role.mention}', embed=embed)
 
 
 bot.run('NzE5NTg2NjA3ODAzNjYyMzc2.Xt6RxA.PqswtjZFqh62t2PxoGXOHnvC834')
