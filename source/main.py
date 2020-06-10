@@ -1,3 +1,4 @@
+import random
 import discord
 from discord.ext import commands
 
@@ -17,12 +18,13 @@ queue_eu_role_id = 719620470621863956
 lastgame_role_id = 719625580596691054
 lastgame_role_ready_id = 719625720581718055
 tenman_role_id = 698350963395788870
+captain_role_id = 698343215119597669
 queue_na_id = 698323056484941914
 queue_eu_id = 698323700025524345
 queue_last_id = 698371067336589313
 queue_teams_ids = [698323152836493312, 698323212773228584,
                    698323976895725608, 698324016762454126]
-channel_id = 698328586096214098
+channel_id = 698328368676077698
 
 bot = commands.Bot(command_prefix='!', description='Vice Volerant 10man bot. Type \'!help\' for help.')
 
@@ -136,14 +138,47 @@ async def check_ready(member, role_id, after):
     await member.add_roles(role)
 
     if len(after.channel.members) == after.channel.user_limit:
+        captains = await choose_captains(role, after)
+
         channel = bot.get_channel(channel_id)
         bot_avatar = bot.user.avatar_url
         embed = discord.Embed()
         embed.set_thumbnail(url=bot_avatar)
         embed.add_field(name="**Queue Filled**",
-                        value="Queue has reached 10 players. Captains will start adding players on VALORANT to fill the party.")
+                        value=f'{after.channel.name} has reached 10 players. Captains will start adding players on VALORANT to fill the party.',
+                        inline=False)
+        embed.add_field(name="**Captains**", value=f'{captains[0].mention} and {captains[1].mention}', inline=False)
+
+        if random.randint(0, 1):
+            captains.reverse()
+        
+        embed.add_field(name="**Captain Selections**",
+                        value=f'{captains[0].mention} has been chosen for first pick and will add players to join the party.\n{captains[1].mention} has been chosen for map and side.',
+                        inline=False)
         embed.set_footer(text='Vice Valorant 10mans/Scrims', icon_url=bot_avatar)
         await channel.send(content=f'{role.mention}', embed=embed)
+
+
+async def choose_captains(role, after):
+    logging.info(f'Attempting to choose captains from the members of the role \"{role.id}\"')
+    members = after.channel.members
+    members_copy = list(members)
+    captain_roles = []
+    for member in members:
+        if any([captain_role_id == x.id for x in member.roles]):
+            captain_roles.append(member)
+            members_copy.remove(member)
+
+    num_captains = len(captain_roles)
+    if num_captains == 0:
+        return random.sample(members, 2)
+    elif num_captains == 1:
+        captains = list(captain_roles)
+        captains.append(random.choice(members_copy))
+        return captains
+    else:
+        return random.sample(captain_roles, 2)
+        
 
 
 bot.run('NzE5NTg2NjA3ODAzNjYyMzc2.Xt6RxA.PqswtjZFqh62t2PxoGXOHnvC834')
