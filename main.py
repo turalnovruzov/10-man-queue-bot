@@ -181,4 +181,4 @@ async def choose_captains(role, after):
         
 
 
-bot.run('NzE5NTg2NjA3ODAzNjYyMzc2.Xt6RxA.PqswtjZFqh62t2PxoGXOHnvC834')
+bot.run('TOKEN')
