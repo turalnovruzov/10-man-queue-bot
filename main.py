@@ -1,5 +1,6 @@
 import random
 import discord
+import json
 from discord.ext import commands
 
 # Split logger to log to console and file
@@ -12,7 +13,7 @@ fileHandler = logging.FileHandler("logs.log")
 fileHandler.setFormatter(logFormatter)
 rootLogger.addHandler(fileHandler)
 
-# Raidboss Ids
+# Vice ids
 queue_na_role_id = 719620287129321502
 queue_eu_role_id = 719620470621863956
 lastgame_role_id = 719625580596691054
@@ -180,5 +181,7 @@ async def choose_captains(role, after):
         return random.sample(captain_roles, 2)
         
 
+with open('info.json', 'r') as f:
+    token = json.load(f)
 
-bot.run('TOKEN')
+bot.run(token)

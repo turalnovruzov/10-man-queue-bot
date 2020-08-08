@@ -2,3 +2,4 @@
 /.vscode/
 .DS_store
 logs.log
+info.json
